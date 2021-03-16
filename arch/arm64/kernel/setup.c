@@ -66,6 +66,8 @@
 #include <asm/xen/hypervisor.h>
 #include <asm/mmu_context.h>
 
+
+
 unsigned int boot_reason;
 EXPORT_SYMBOL(boot_reason);
 
@@ -412,6 +414,8 @@ static int __init topology_init(void)
 		cpu->hotpluggable = 1;
 		register_cpu(cpu, i);
 	}
+
+
 
 	return 0;
 }
