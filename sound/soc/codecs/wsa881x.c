@@ -1184,7 +1184,7 @@ static int wsa881x_gpio_init(struct swr_device *pdev)
 
 static int wsa881x_swr_probe(struct swr_device *pdev)
 {
-	int ret = 0;
+	int ret = -EINVAL;
 	struct wsa881x_priv *wsa881x;
 	u8 devnum = 0;
 	bool pin_state_current = false;
