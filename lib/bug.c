@@ -46,6 +46,7 @@
 #include <linux/bug.h>
 #include <linux/sched.h>
 
+
 extern const struct bug_entry __start___bug_table[], __stop___bug_table[];
 
 static inline unsigned long bug_addr(const struct bug_entry *bug)
@@ -182,6 +183,8 @@ enum bug_trap_type report_bug(unsigned long bugaddr, struct pt_regs *regs)
 		add_taint(BUG_GET_TAINT(bug), LOCKDEP_STILL_OK);
 		return BUG_TRAP_TYPE_WARN;
 	}
+
+
 
 	printk(KERN_DEFAULT "------------[ cut here ]------------\n");
 
