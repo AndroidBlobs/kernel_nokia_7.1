@@ -12,7 +12,7 @@
  */
 
 &soc {
-	led_flash0: qcom,camera-flash@0 {
+/*	led_flash0:qcom,camera-flash@0 {
 		cell-index = <0>;
 		compatible = "qcom,camera-flash";
 		qcom,flash-source = <&pm660l_flash0 &pm660l_flash1>;
@@ -21,7 +21,7 @@
 		status = "ok";
 	};
 
-	led_flash1: qcom,camera-flash@1 {
+	led_flash1:qcom,camera-flash@1 {
 		cell-index = <1>;
 		compatible = "qcom,camera-flash";
 		qcom,flash-source = <&pm660l_flash2>;
@@ -29,7 +29,7 @@
 		qcom,switch-source = <&pm660l_switch1>;
 		status = "ok";
 	};
-
+*/
 	cam_avdd_gpio_regulator: cam_avdd_fixed_regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "cam_avdd_gpio_regulator";
@@ -72,7 +72,7 @@
 };
 
 &cci {
-	actuator0: qcom,actuator@0 {
+/*	actuator0: qcom,actuator@0 {
 		cell-index = <0>;
 		reg = <0x0>;
 		compatible = "qcom,actuator";
@@ -83,7 +83,7 @@
 		qcom,cam-vreg-max-voltage = <3600000>;
 		qcom,cam-vreg-op-mode = <0>;
 	};
-
+*/
 	actuator1: qcom,actuator@1 {
 		cell-index = <1>;
 		reg = <0x1>;
@@ -140,7 +140,7 @@
 		qcom,gpio-req-tbl-label = "RNG_EN";
 	};
 
-	eeprom0: qcom,eeprom@0 {
+/*	eeprom0: qcom,eeprom@0 {
 		cell-index = <0>;
 		reg = <0>;
 		compatible = "qcom,eeprom";
@@ -254,7 +254,7 @@
 		clock-names = "cam_src_clk", "cam_clk";
 		qcom,clock-rates = <24000000 0>;
 	};
-
+*/
 	qcom,camera@0 {
 		cell-index = <0>;
 		compatible = "qcom,camera";

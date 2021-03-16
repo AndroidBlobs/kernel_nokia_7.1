@@ -1696,6 +1696,33 @@
 			};
 		};
 
+		fih_lcm_boost: fih_lcm_boost {
+			fih_lcm_boost_active: fih_lcm_boost_active {
+				mux {
+					pins = "gpio62";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio62";
+					drive-strength = <8>; /* 8 mA */
+					bias-disable = <0>; /* no pull */
+				};
+			};
+			fih_lcm_boost_suspend: fih_lcm_boost_suspend {
+				mux {
+					pins = "gpio62";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio62";
+					drive-strength = <2>; /* 2 mA */
+					bias-disable; /* pull down */
+				};
+			};
+		};
+
 		mdss_dp_aux_active: mdss_dp_aux_active {
 			mux {
 				pins = "gpio55", "gpio56";
@@ -1788,5 +1815,60 @@
 				};
 			};
 		};
+		
+				/* add pingrp for Goodix touchscreen */
+		ts_int_default: ts_int_default {
+				mux {
+						pins = "gpio67";
+						function = "gpio";
+				};
+		
+				config {
+						pins = "gpio67";
+						drive-strength = <16>;
+						bias-disable;
+						input-enable;
+				};
+		};
+
+		ts_int_output_high: ts_int_output_high {
+				mux {
+						pins = "gpio67";
+						function = "gpio";
+				};
+		
+				config {
+						pins = "gpio67";
+						// drive-strength = <16>; 
+						output-high;
+				};
+		};
+
+		ts_int_output_low: ts_int_output_low {
+				mux {
+						pins = "gpio67";
+						function = "gpio";
+				};
+		
+				config {
+						pins = "gpio67";
+						// drive-strength = <16>; 
+						output-low;
+				};
+		};
+
+		ts_int_input: ts_int_input {
+				mux {
+						pins = "gpio67";
+						function = "gpio";
+				};
+
+				config {
+						pins = "gpio67";
+						bias-disable;
+						input-enable;
+				};
+		};
+	
 	};
 };

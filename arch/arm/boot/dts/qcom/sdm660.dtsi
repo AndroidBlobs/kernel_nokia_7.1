@@ -427,6 +427,9 @@
 		qca,bt-vdd-pa-current-level = <1>; /* LPM/PFM */
 		qca,bt-vdd-ldo-current-level = <1>; /* LPM/PFM */
 	};
+	fih_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+	};
 };
 
 #include "sdm660-smp2p.dtsi"
@@ -875,7 +878,7 @@
 			qcom,high-threshold-uamp = <4200000>;
 			qcom,vph-high-threshold-uv = <3500000>;
 			qcom,vph-low-threshold-uv = <3300000>;
-			qcom,soc-low-threshold = <10>;
+			qcom,soc-low-threshold = <5>;
 		};
 	};
 
@@ -2520,6 +2523,7 @@
 #include "sdm660-bus.dtsi"
 #include "msm-pm660.dtsi"
 #include "msm-pm660l.dtsi"
+#include "sdm660-pinctrl.dtsi"
 #include "msm-pm660-rpm-regulator.dtsi"
 #include "msm-pm660l-rpm-regulator.dtsi"
 #include "sdm660-regulator.dtsi"
@@ -2649,7 +2653,7 @@
 		pinctrl-names = "tlmm_gpio_key_active","tlmm_gpio_key_suspend";
 		pinctrl-0 = <&gpio_key_active>;
 		pinctrl-1 = <&gpio_key_suspend>;
-
+/*
 		camera_focus {
 			label = "camera_focus";
 			gpios = <&tlmm 64 0x1>;
@@ -2674,6 +2678,7 @@
 			gpio-key,wakeup;
 			debounce-interval = <15>;
 		};
+*/
 	};
 };
 

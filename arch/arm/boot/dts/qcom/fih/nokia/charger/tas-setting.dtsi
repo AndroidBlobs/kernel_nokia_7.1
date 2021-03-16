@@ -1,0 +1,23 @@
+&fih_batterydata {
+		qcom,batt-id-range-pct = <15>;
+		#include "fg-gen3-batterydata-jiade-lishen-3500mah-51k-TAS.dtsi"
+};
+&pm660_fg {
+	qcom,fg-sys-term-current = <(-150)>;	/* 100mA + 25mA */
+	qcom,battery-thermal-coefficients = [A1 50 ff];
+	fih,check-external-rsense;
+	fih,use-external-resense = <0>; /* 0:internal, 1: external, 2:PM660+SMB */
+	qcom,fg-jeita-thresholds = <0 15 45 53>;
+};
+
+&pm660_charger {
+	fih,dcp-2a-function-enable;
+	fih,lcm-on-off-cur-control;
+	/* TEMP_LOW	TEMP_HIGH	FV */
+	qcom,jeita-fcc-cfg = <0 157 600000>,
+					<158 440 3000000>,
+					<441 530 900000>;
+	qcom,jeita-fv-cfg = <0 157 4400000>,
+					<158 440 4400000>,
+					<441 530 4150000>;
+};

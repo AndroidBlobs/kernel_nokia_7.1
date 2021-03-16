@@ -818,14 +818,11 @@
 		qcom,wcn-btfm;
 		qcom,mi2s-audio-intf;
 		qcom,auxpcm-audio-intf;
-		qcom,ext-disp-audio-rx;
 		qcom,msm-mi2s-master = <1>, <1>, <1>, <1>;
 		qcom,msm-mclk-freq = <9600000>;
 		qcom,msm-mbhc-hphl-swh = <1>;
 		qcom,msm-mbhc-gnd-swh = <1>;
-		qcom,msm-micbias2-ext-cap;
 		qcom,msm-hs-micbias-type = "external";
-		qcom,us-euro-gpios = <&us_euro_gpio>;
 		qcom,cdc-pdm-gpios = <&cdc_pdm_gpios>;
 		qcom,cdc-comp-gpios = <&cdc_comp_gpios>;
 		qcom,cdc-dmic-gpios = <&cdc_dmic_gpios>;
@@ -833,8 +830,8 @@
 			"RX_BIAS", "INT_MCLK0",
 			"SPK_RX_BIAS", "INT_MCLK0",
 			"INT_LDO_H", "INT_MCLK0",
-			"RX_I2S_CLK", "INT_MCLK0",
-			"TX_I2S_CLK", "INT_MCLK0",
+      "RX_I2S_CLK", "INT_MCLK0",
+      "TX_I2S_CLK", "INT_MCLK0",
 			"MIC BIAS External", "Handset Mic",
 			"MIC BIAS External2", "Headset Mic",
 			"MIC BIAS External", "Secondary Mic",
@@ -912,12 +909,6 @@
 		asoc-codec-names = "msm-stub-codec.1", "msm-dig-codec",
 					"analog-codec", "msm_sdw_codec",
 					"msm-ext-disp-audio-codec-rx";
-
-		qcom,wsa-max-devs = <2>;
-		qcom,wsa-devs = <&wsa881x_211_en>, <&wsa881x_212_en>,
-				<&wsa881x_213_en>, <&wsa881x_214_en>;
-		qcom,wsa-aux-dev-prefix = "SpkrLeft", "SpkrRight",
-					  "SpkrLeft", "SpkrRight";
 	};
 
 	us_euro_gpio: msm_cdc_pinctrl@75 {
