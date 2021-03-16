@@ -580,6 +580,7 @@ static int fsg_setup(struct usb_function *f,
 
 /*-------------------------------------------------------------------------*/
 
+
 /* All the following routines run in process context */
 
 /* Use this for bulk or interrupt transfers, not ep0 */
@@ -1234,9 +1235,10 @@ static int do_read_header(struct fsg_common *common, struct fsg_buffhd *bh)
 static int do_read_toc(struct fsg_common *common, struct fsg_buffhd *bh)
 {
 	struct fsg_lun	*curlun = common->curlun;
-	int		msf = common->cmnd[1] & 0x02;
 	int		start_track = common->cmnd[6];
-	u8		*buf = (u8 *)bh->buf;
+
+
+
 
 	if ((common->cmnd[1] & ~0x02) != 0 ||	/* Mask away MSF */
 			start_track > 1) {
@@ -1244,18 +1246,7 @@ static int do_read_toc(struct fsg_common *common, struct fsg_buffhd *bh)
 		return -EINVAL;
 	}
 
-	memset(buf, 0, 20);
-	buf[1] = (20-2);		/* TOC data length */
-	buf[2] = 1;			/* First track number */
-	buf[3] = 1;			/* Last track number */
-	buf[5] = 0x16;			/* Data track, copying allowed */
-	buf[6] = 0x01;			/* Only track is number 1 */
-	store_cdrom_address(&buf[8], msf, 0);
-
-	buf[13] = 0x16;			/* Lead-out track is data */
-	buf[14] = 0xAA;			/* Lead-out track number */
-	store_cdrom_address(&buf[16], msf, curlun->num_sectors);
-	return 20;
+	return 0;
 }
 
 static int do_mode_sense(struct fsg_common *common, struct fsg_buffhd *bh)
@@ -1802,8 +1793,7 @@ static int check_command(struct fsg_common *common, int cmnd_size,
 		 */
 		if (common->cmnd[0] != INQUIRY &&
 		    common->cmnd[0] != REQUEST_SENSE) {
-			DBG(common, "unsupported LUN %u\n", common->lun);
-			return -EINVAL;
+
 		}
 	}
 
@@ -1811,13 +1801,17 @@ static int check_command(struct fsg_common *common, int cmnd_size,
 	 * If a unit attention condition exists, only INQUIRY and
 	 * REQUEST SENSE commands are allowed; anything else must fail.
 	 */
-	if (curlun && curlun->unit_attention_data != SS_NO_SENSE &&
+	if ((curlun && curlun->unit_attention_data != SS_NO_SENSE &&
 	    common->cmnd[0] != INQUIRY &&
-	    common->cmnd[0] != REQUEST_SENSE) {
+	    common->cmnd[0] != REQUEST_SENSE)
+
+	    ){
 		curlun->sense_data = curlun->unit_attention_data;
 		curlun->unit_attention_data = SS_NO_SENSE;
 		return -EINVAL;
 	}
+
+
 
 	/* Check that only command bytes listed in the mask are non-zero */
 	common->cmnd[1] &= 0x1f;			/* Mask away the LUN */
@@ -1835,6 +1829,8 @@ static int check_command(struct fsg_common *common, int cmnd_size,
 		curlun->sense_data = SS_MEDIUM_NOT_PRESENT;
 		return -EINVAL;
 	}
+
+
 
 	return 0;
 }
@@ -1990,7 +1986,7 @@ static int do_scsi_command(struct fsg_common *common)
 		common->data_size_from_cmnd =
 			get_unaligned_be16(&common->cmnd[7]);
 		reply = check_command(common, 10, DATA_DIR_TO_HOST,
-				      (7<<6) | (1<<1), 1,
+					  (3<<7) | (0x1f<<1), 1,
 				      "READ TOC");
 		if (reply == 0)
 			reply = do_read_toc(common, bh);
@@ -2099,6 +2095,7 @@ static int do_scsi_command(struct fsg_common *common)
 		/* Fall through */
 
 	default:
+
 unknown_cmnd:
 		common->data_size_from_cmnd = 0;
 		sprintf(unknown, "Unknown x%02x", common->cmnd[0]);
@@ -2109,7 +2106,8 @@ unknown_cmnd:
 			reply = -EINVAL;
 		}
 		break;
-	}
+
+	}//switch (common->cmnd[0])
 	up_read(&common->filesem);
 
 	if (reply == -EINTR || signal_pending(current))
@@ -2300,6 +2298,7 @@ reset:
 	common->running = 0;
 	if (!new_fsg || rc)
 		return rc;
+
 
 	common->fsg = new_fsg;
 	fsg = common->fsg;
@@ -2588,6 +2587,8 @@ static int fsg_main_thread(void *common_)
 
 		if (send_status(common))
 			continue;
+
+
 
 		spin_lock_irq(&common->lock);
 		if (!exception_in_progress(common))
@@ -2905,10 +2906,6 @@ int fsg_common_create_lun(struct fsg_common *common, struct fsg_lun_config *cfg,
 
 	lun->name_pfx = name_pfx;
 
-	lun->cdrom = !!cfg->cdrom;
-	lun->ro = cfg->cdrom || cfg->ro;
-	lun->initially_ro = lun->ro;
-	lun->removable = !!cfg->removable;
 
 	if (!common->sysfs) {
 		/* we DON'T own the name!*/
