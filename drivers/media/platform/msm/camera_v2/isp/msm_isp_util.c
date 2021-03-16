@@ -988,6 +988,7 @@ static long msm_isp_ioctl_unlocked(struct v4l2_subdev *sd,
 		if (arg) {
 			enum msm_vfe_input_src frame_src =
 				*((enum msm_vfe_input_src *)arg);
+
 			vfe_dev->hw_info->vfe_ops.core_ops.
 				reg_update(vfe_dev, frame_src);
 		}

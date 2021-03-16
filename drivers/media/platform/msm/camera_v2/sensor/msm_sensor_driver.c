@@ -18,6 +18,22 @@
 #include "msm_cci.h"
 #include "msm_camera_dt_util.h"
 
+#define FTM
+#ifdef FTM
+#define CAMERA_MASK_S5K2L7 0X01
+#define CAMERA_MASK_S5K4H8 0X02
+#define CAMERA_MASK_S5K3H7 0X04
+#define CAMERA_MASK_S5K3M3 0X02
+#define CAMERA_MASK_S5K3P8 0X04
+#define CAMERA_MASK_S5KGM1SP 0x08 
+#define CAMERA_MASK_S5K5E9YU05  0x10
+#define CAMERA_MASK_OV16885   0x20
+#define CAMERA_MASK_HI846   0x40
+
+
+static int32_t g_camera_ping = 0;
+#endif
+
 /* Logging macro */
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
@@ -29,6 +45,7 @@ static int32_t msm_sensor_driver_platform_probe(struct platform_device *pdev);
 
 /* Static declaration */
 static struct msm_sensor_ctrl_t *g_sctrl[MAX_CAMERAS];
+
 
 static int msm_sensor_platform_remove(struct platform_device *pdev)
 {
@@ -723,6 +740,18 @@ static void msm_sensor_fill_sensor_info(struct msm_sensor_ctrl_t *s_ctrl,
 	strlcpy(entity_name, s_ctrl->msm_sd.sd.entity.name, MAX_SENSOR_NAME);
 }
 
+#ifdef FTM
+static ssize_t show_camera_ping(struct device *dev,
+					struct device_attribute *attr, char *buf)
+{
+	pr_err("%s=%d", __func__, g_camera_ping);
+	return scnprintf(buf, PAGE_SIZE, "%d\n", g_camera_ping);
+}
+
+static DEVICE_ATTR(cam_ping, 440, show_camera_ping, NULL);
+static const struct attribute *cam_ping_attrib = &dev_attr_cam_ping.attr;
+#endif
+
 /* static function definition */
 static int32_t msm_sensor_driver_is_special_support(
 	struct msm_sensor_ctrl_t *s_ctrl,
@@ -901,21 +930,26 @@ int32_t msm_sensor_driver_probe(void *setting,
 		 * and probe already succeeded for that sensor. Ignore this
 		 * probe
 		 */
-		if (slave_info->sensor_id_info.sensor_id ==
-			s_ctrl->sensordata->cam_slave_info->
-				sensor_id_info.sensor_id &&
-			!(strcmp(slave_info->sensor_name,
-			s_ctrl->sensordata->cam_slave_info->sensor_name))) {
-			pr_err("slot%d: sensor name: %s sensor id%d already probed\n",
+
+		/*
+                 * pr_err("%s, slave_info->slave_addr = 0x%x\n", __func__, slave_info->slave_addr);
+                 * pr_err("%s, slave_info->sensor_name = %s\n", __func__, slave_info->sensor_name);
+                 * pr_err("%s, s_ctrl->sensordata->cam_slave_info->slave_addr = 0x%x\n", __func__, s_ctrl->sensordata->cam_slave_info->slave_addr);
+                 * pr_err("%s, s_ctrl->sensordata->cam_slave_info->sensor_name = %s\n", __func__, s_ctrl->sensordata->cam_slave_info->sensor_name);
+                 */
+
+		if ((slave_info->sensor_id_info.sensor_id ==
+			s_ctrl->sensordata->cam_slave_info->sensor_id_info.sensor_id) &&
+			(slave_info->slave_addr == s_ctrl->sensordata->cam_slave_info->slave_addr)) {	//SW4-RL-Camera-add more condition when probe again-00*_20170825
+			pr_err("%s, slot_%d (sensor_id: 0x%x, sensor_name = %s) already probed\n", __func__,
 				slave_info->camera_id,
-				slave_info->sensor_name,
-				s_ctrl->sensordata->cam_slave_info->
-					sensor_id_info.sensor_id);
+				s_ctrl->sensordata->cam_slave_info->sensor_id_info.sensor_id,
+				s_ctrl->sensordata->cam_slave_info->sensor_name);
 			msm_sensor_fill_sensor_info(s_ctrl,
 				probed_info, entity_name);
-		} else
-			pr_err("slot %d has some other sensor\n",
-				slave_info->camera_id);
+		} else{
+			pr_err("%s, slot_%d has some other sensor\n", __func__, slave_info->camera_id);
+		}
 
 		rc = 0;
 		goto free_slave_info;
@@ -1050,6 +1084,14 @@ CSID_TG:
 	s_ctrl->bypass_video_node_creation =
 		slave_info->bypass_video_node_creation;
 
+	pr_err("%s wbl E slave_info->sensor_name = %s \n", __func__, slave_info->sensor_name);
+#ifdef FTM
+
+	
+	pr_err("%s wbl E slave_info->sensor_name = %s \n", __func__, slave_info->sensor_name);
+	pr_err("%s wbl E g_camera_ping = 0x%x \n", __func__, g_camera_ping);
+#endif
+
 	/*
 	 * Create /dev/videoX node, comment for now until dummy /dev/videoX
 	 * node is created and used by HAL
@@ -1094,6 +1136,7 @@ CSID_TG:
 
 	msm_sensor_fill_sensor_info(s_ctrl, probed_info, entity_name);
 
+
 	/*
 	 * Set probe succeeded flag to 1 so that no other camera shall
 	 * probed on this slot
@@ -1135,6 +1178,7 @@ static int32_t msm_sensor_driver_get_dt_data(struct msm_sensor_ctrl_t *s_ctrl)
 		goto FREE_SENSOR_DATA;
 	}
 	s_ctrl->id = cell_id;
+	pr_err(" cell-index cell_id=%d", cell_id);
 
 	/* Validate cell_id */
 	if (cell_id >= MAX_CAMERAS) {
@@ -1174,7 +1218,7 @@ static int32_t msm_sensor_driver_get_dt_data(struct msm_sensor_ctrl_t *s_ctrl)
 				sensordata->special_support_size = 0;
 				break;
 			}
-			CDBG("%s special_support_sensors[%d] = %s\n", __func__,
+			pr_err("%s special_support_sensors[%d] = %s\n", __func__,
 				i, sensordata->special_support_sensors[i]);
 		}
 	}
@@ -1268,6 +1312,8 @@ FREE_SENSOR_DATA:
 	return rc;
 }
 
+
+
 static int32_t msm_sensor_driver_parse(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	int32_t                   rc = 0;
@@ -1319,7 +1365,9 @@ static int32_t msm_sensor_driver_parse(struct msm_sensor_ctrl_t *s_ctrl)
 
 	/* Store sensor control structure in static database */
 	g_sctrl[s_ctrl->id] = s_ctrl;
-	CDBG("g_sctrl[%d] %pK", s_ctrl->id, g_sctrl[s_ctrl->id]);
+	pr_err("wbl g_sctrl[%d] %pK", s_ctrl->id, g_sctrl[s_ctrl->id]);
+
+
 
 	return rc;
 
@@ -1376,6 +1424,13 @@ static int32_t msm_sensor_driver_platform_probe(struct platform_device *pdev)
 
 	/* Fill device in power info */
 	s_ctrl->sensordata->power_info.dev = &pdev->dev;
+#ifdef FTM
+	pr_err("platform : Register sysfs, cam_ping_attrib\n");
+	rc = sysfs_create_file(&pdev->dev.kobj, cam_ping_attrib);
+	if(rc) {
+		pr_err("Cannot register sysfs, cam_ping_attrib\n");
+	}
+#endif
 	return rc;
 FREE_S_CTRL:
 	kfree(s_ctrl);

@@ -1715,6 +1715,7 @@ void msm_vfe47_axi_cfg_wm_reg(
 	if (stream_info->frame_based)
 		val |= 0x2;
 	msm_camera_io_w(val, vfe_dev->vfe_base + wm_base + 0x14);
+
 	if (!stream_info->frame_based) {
 		/* WR_IMAGE_SIZE */
 		val = ((msm_isp_cal_word_per_line(
