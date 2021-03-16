@@ -29,6 +29,8 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/exception.h>
 
+
+
 #define PANIC_TIMER_STEP 100
 #define PANIC_BLINK_SPD 18
 
@@ -80,6 +82,8 @@ void panic(const char *fmt, ...)
 	va_list args;
 	long i, i_next = 0;
 	int state = 0;
+
+	
 
 	trace_kernel_panic(0);
 
