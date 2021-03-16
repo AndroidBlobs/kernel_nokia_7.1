@@ -57,6 +57,7 @@
 #define TRACE_MSM_THERMAL
 #include <trace/trace_thermal.h>
 
+
 #define MSM_LIMITS_DCVSH		0x10
 #define MSM_LIMITS_NODE_DCVS		0x44435653
 #define MSM_LIMITS_SUB_FN_GENERAL	0x47454E00
@@ -2861,6 +2862,8 @@ static void msm_thermal_bite(int zone_id, int temp)
 	int tsens_id = 0;
 	int ret = 0;
 
+	
+
 	ret = zone_id_to_tsen_id(zone_id, &tsens_id);
 	if (ret < 0) {
 		pr_err("Zone:%d reached temperature:%d. Err = %d System reset\n",
@@ -2902,9 +2905,12 @@ static int do_therm_reset(void)
 			continue;
 		}
 
-		if (temp >= msm_thermal_info.therm_reset_temp_degC)
+		if (temp >= msm_thermal_info.therm_reset_temp_degC) {
+			printk("BBox;%s:(%d:%d)\n", __func__, i, temp);
+			printk("BBox::UEC;22::11\n");
 			msm_thermal_bite(
 			thresh[MSM_THERM_RESET].thresh_list[i].sensor_id, temp);
+		}
 	}
 
 	return ret;
